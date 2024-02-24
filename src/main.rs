@@ -20,7 +20,7 @@ fn main() -> std::io::Result<()> {
         let iface = linux::Interface::new(name, &[ip.parse().map_err(map_io_err)?], 512)?;
         let mut tun_fd = iface.into_tun_fd();
         loop {
-            if stop_r.recv_timeout(Duration::from_millis(1)).is_ok() {
+            if stop_r.try_recv().is_ok() {
                 stop_cb_s.send(()).map_err(map_io_err)?;
                 return Ok(());
             }
