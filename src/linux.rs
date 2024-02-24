@@ -72,11 +72,11 @@ impl IfReqFlags {
     }
 }
 
-pub(crate) struct IFace {
+pub(crate) struct Interface {
     tun_fd: File,
 }
 
-impl IFace {
+impl Interface {
     pub(crate) fn new(
         mut name: String,
         ips: &[Ipv4Net],
@@ -109,13 +109,11 @@ impl IFace {
                 return Err(map_io_err("failed to set address"));
             }
         }
-        // Set mtu.
         {
             let mut if_req_mtu = IfReqMtu::new(&name, tun_device_mtu as i32);
             ioctl(&ip_fd, SIOCSIFMTU, &mut if_req_mtu)
                 .map_err(|e| map_io_err_msg(e, "failed to set mtu"))?;
         }
-        // Set flags.
         {
             let mut if_req_flags = IfReqFlags::new(&name);
             ioctl(&ip_fd, SIOCSIFFLAGS, &mut if_req_flags)
